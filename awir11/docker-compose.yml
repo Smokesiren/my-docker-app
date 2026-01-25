@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  awir-app:
+    build: .
+    container_name: awir-app
+    ports:
+      - "8099:8099"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_ACTIVEMQ_BROKER_URL=tcp://artemis:61616
+      - SPRING_ACTIVEMQ_USER=admin
+      - SPRING_ACTIVEMQ_PASSWORD=admin
+    depends_on:
+      - artemis
+
+  artemis:
+    image: apache/activemq-artemis:latest
+    container_name: artemis
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    environment:
+      - ARTEMIS_USER=admin
+      - ARTEMIS_PASSWORD=admin

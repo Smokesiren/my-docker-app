@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+    awir-app:
+     build: .
+     container_name: awir-app
+     ports:
+          - "8099:8099"
