@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -34,11 +33,9 @@ public class UserRestController {
         return mapper.toDto(u);
     }
 
+    // Usunięto AccessDeniedException i isAdmin() - SecurityConfig to załatwia
     @PostMapping
-    public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto payload) throws AccessDeniedException {
-        if (!isAdmin()) {
-            throw new AccessDeniedException("You do not have permission to create a user");
-        }
+    public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto payload) {
         var entity = mapper.toEntity(payload);
         entity.setId(null);
         var saved = service.save(entity);
@@ -47,12 +44,10 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}")
-    public UserDto update(@PathVariable Long id, @Valid @RequestBody UserDto payload) throws AccessDeniedException {
-        if (!isAdmin()) {
-            throw new AccessDeniedException("You do not have permission to update a user");
-        }
+    public UserDto update(@PathVariable Long id, @Valid @RequestBody UserDto payload) {
         var existing = service.findById(id);
         if (existing == null) throw new NotFoundException("User", id);
+        
         var entity = mapper.toEntity(payload);
         entity.setId(id);
         var saved = service.save(entity);
@@ -62,19 +57,10 @@ public class UserRestController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) throws AccessDeniedException {
-        if (!isAdmin()) {
-            throw new AccessDeniedException("You do not have permission to delete a user");
-        }
+    public void delete(@PathVariable Long id) {
         var existing = service.findById(id);
         if (existing == null) throw new NotFoundException("User", id);
         service.delete(id);
-    }
-
-    private boolean isAdmin() {
-        return org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication()
-                .getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
     }
 
     public static class NotFoundException extends RuntimeException {

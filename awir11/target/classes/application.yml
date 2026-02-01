@@ -1,0 +1,19 @@
+server:
+  port: 8099
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 583723873235-cvu3b94b1afgmab2m6kl0vmriipsgvu8.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - openid
+              - profile
+              - email
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+        provider:
+          google:
+            user-name-attribute: sub
