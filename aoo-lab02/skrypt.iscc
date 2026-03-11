@@ -1,0 +1,18 @@
+P := parse_file "my.c";
+Domain := P[0];
+Write := P[1] * Domain;
+Read := P[3] * Domain;
+Schedule := P[4];
+Before := Schedule << Schedule;
+
+RaW := (Write . (Read^-1)) * Before;
+WaW := (Write . (Write^-1)) * Before;
+WaR := (Read . (Write^-1)) * Before;
+R := (RaW+WaW+WaR);
+
+print "Relacja R:";
+print R;
+
+SCHED:=[n]->{[i,j]->[i+4*j,j]: 2<=i<=n and 1<=j<=n};
+print "Pseudokod:";
+codegen SCHED;
